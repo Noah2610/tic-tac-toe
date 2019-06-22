@@ -1,0 +1,6 @@
+(
+  axes:    {},
+  actions: {
+    "quit": [ [Key(Escape)], [Key(Q)], ],
+  },
+)

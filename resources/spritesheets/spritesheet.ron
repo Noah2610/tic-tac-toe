@@ -1,0 +1,24 @@
+(
+  spritesheet_width:  64,
+  spritesheet_height: 64,
+  sprites: [
+    ( // EMPTY
+      x:      0,
+      y:      0,
+      width:  16,
+      height: 16,
+    ),
+    ( // X
+      x:      16,
+      y:      0,
+      width:  16,
+      height: 16,
+    ),
+    ( // O
+      x:      32,
+      y:      0,
+      width:  16,
+      height: 16,
+    ),
+  ],
+)
