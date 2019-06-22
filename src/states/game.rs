@@ -1,7 +1,11 @@
 use super::state_prelude::*;
 
+const CAMERA_Z: f32 = 10.0;
+
 #[derive(Default)]
-pub struct Game;
+pub struct Game {
+    cell_size: Option<(f32, f32)>,
+}
 
 impl Game {
     fn load_spritesheet(
@@ -27,8 +31,19 @@ impl Game {
             .dimensions
             .expect("Dimensions must be set in display_config.ron");
 
+        let cell_size =
+            self.cell_size.as_ref().expect("cell_size must be Some");
+
+        let mut transform = Transform::default();
+        transform.set_x(-cell_size.0 * 0.5);
+        transform.set_y(-cell_size.1 * 0.5);
+        transform.set_z(CAMERA_Z);
+        let size = Size::new(dimensions.0 as f32, dimensions.1 as f32);
+
         data.world
             .create_entity()
+            .with(transform)
+            .with(size)
             .with(
                 Camera::new()
                     .base_speed(Vector(250.0, 250.0))
@@ -41,7 +56,6 @@ impl Game {
                 0.0,                 // Bottom (!)
                 dimensions.1 as f32, // Top    (!)
             )))
-            .with(Size::new(dimensions.0 as f32, dimensions.1 as f32))
             .build();
     }
 
@@ -58,10 +72,8 @@ impl Game {
             .display_config
             .dimensions
             .expect("Dimensions must be set in display_config.ron");
-        let cell_size = (
-            dimensions.0 / settings.grid_size.0,
-            dimensions.1 / settings.grid_size.1,
-        );
+        let cell_size =
+            self.cell_size.as_ref().expect("cell_size must be Some");
         let spritesheet = world
             .read_resource::<SpriteSheetHandles>()
             .get("spritesheet")
@@ -70,8 +82,8 @@ impl Game {
         for col in 0 .. settings.grid_size.0 {
             for row in 0 .. settings.grid_size.1 {
                 let mut transform = Transform::default();
-                transform.set_x((row * cell_size.0) as f32);
-                transform.set_y((col * cell_size.1) as f32);
+                transform.set_x(row as f32 * cell_size.0);
+                transform.set_y(col as f32 * cell_size.1);
 
                 let size = Size::new(cell_size.0 as f32, cell_size.1 as f32);
 
@@ -101,6 +113,21 @@ impl<'a, 'b> State<CustomGameData<'a, 'b, CustomData>, StateEvent> for Game {
         data.world.add_resource(Settings::default());
 
         self.load_spritesheet(&mut data);
+
+        // Set `cell_size`
+        {
+            let custom_data =
+                data.data.custom.as_ref().expect("CustomData must be set");
+            let settings = data.world.read_resource::<Settings>().clone();
+            let dimensions = custom_data
+                .display_config
+                .dimensions
+                .expect("Dimensions must be set in display_config.ron");
+            self.cell_size = Some((
+                (dimensions.0 / settings.grid_size.0) as f32,
+                (dimensions.1 / settings.grid_size.1) as f32,
+            ));
+        }
 
         self.initialize_camera(&mut data);
         self.initialize_grid(&mut data);
