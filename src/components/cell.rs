@@ -17,6 +17,15 @@ impl CellType {
     }
 }
 
+impl From<&Player> for CellType {
+    fn from(player: &Player) -> Self {
+        match player {
+            Player::One => CellType::X,
+            Player::Two => CellType::O,
+        }
+    }
+}
+
 impl Default for CellType {
     fn default() -> Self {
         CellType::Empty
@@ -25,17 +34,18 @@ impl Default for CellType {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Cell {
-    pub x:         u32,
-    pub y:         u32,
+    pub pos:       (u32, u32),
     pub cell_type: CellType,
+    // TODO: `winning_cell` is not really used, currently.
+    pub winning_cell: bool,
 }
 
 impl Cell {
     pub fn new(x: u32, y: u32) -> Self {
         Self {
-            x,
-            y,
-            cell_type: Default::default(),
+            pos:          (x, y),
+            cell_type:    Default::default(),
+            winning_cell: false,
         }
     }
 

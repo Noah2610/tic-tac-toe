@@ -89,6 +89,7 @@ fn build_game_data<'a, 'b>(
     let game_data = CustomGameData::<CustomData>::new()
         .custom(custom_data)
         .dispatcher("game")?
+        .dispatcher("won")?
         .with_core_bundle(transform_bundle)?
         .with_core_bundle(render_bundle)?
         .with_core_bundle(input_bundle)?

@@ -173,33 +173,11 @@ impl<'a, 'b> State<CustomGameData<'a, 'b, CustomData>, StateEvent> for Game {
     ) -> Trans<CustomGameData<'a, 'b, CustomData>, StateEvent> {
         data.data.update(&data.world, "game").unwrap();
 
-        Trans::None
-    }
-
-    /*
-    fn handle_event(
-        &mut self,
-        data: StateData<CustomGameData<CustomData>>,
-        event: StateEvent,
-    ) -> Trans<CustomGameData<'a, 'b, CustomData>, StateEvent> {
-        match event {
-            StateEvent::Window(Event::WindowEvent {
-                window_id,
-                event:
-                    WindowEvent::MouseInput {
-                        device_id,
-                        state,
-                        button,
-                        modifiers,
-                    },
-            }) => {
-                dbg!(state);
-                dbg!(button);
-            }
-            _ => (),
+        if let Some(player_won) = &*data.world.read_resource::<PlayerWon>() {
+            // A player won, switch to `states::Won` state.
+            return Trans::Switch(Box::new(Won::default()));
         }
 
         Trans::None
     }
-    */
 }

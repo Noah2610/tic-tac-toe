@@ -2,7 +2,7 @@
 pub struct Settings {
     pub screen_dimensions: (u32, u32),
     pub grid_size:         (u32, u32),
-    pub win_length:        u32,
+    pub win_length:        usize,
 }
 
 impl Default for Settings {

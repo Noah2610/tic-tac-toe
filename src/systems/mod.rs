@@ -16,7 +16,7 @@ mod system_prelude {
 
     pub use crate::components::prelude::*;
     pub use crate::settings::Settings;
-    pub use crate::states::game::{ActivePlayer, Player};
+    pub use crate::states::game::{ActivePlayer, Player, PlayerWon};
 }
 
 pub use prelude::*;

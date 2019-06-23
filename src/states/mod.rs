@@ -1,7 +1,9 @@
 pub mod game;
+pub mod won;
 
 pub mod prelude {
     pub use super::game::Game;
+    pub use super::won::Won;
 }
 
 mod state_prelude {
