@@ -41,9 +41,9 @@ impl Cell {
 
     pub fn click(&mut self, active_player: &ActivePlayer) {
         if let CellType::Empty = self.cell_type {
-            self.cell_type = match active_player {
-                ActivePlayer::One => CellType::X,
-                ActivePlayer::Two => CellType::O,
+            self.cell_type = match active_player.0 {
+                Player::One => CellType::X,
+                Player::Two => CellType::O,
             };
         }
     }

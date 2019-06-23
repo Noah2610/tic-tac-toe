@@ -3,17 +3,27 @@ use super::state_prelude::*;
 const CAMERA_Z: f32 = 10.0;
 
 #[derive(Debug, PartialEq, Clone)]
-pub enum ActivePlayer {
+pub enum Player {
     One,
     Two,
 }
 
+pub struct ActivePlayer(pub Player);
+
+impl Default for ActivePlayer {
+    fn default() -> Self {
+        Self(Player::One)
+    }
+}
+
+pub type PlayerWon = Option<Player>;
+
 impl ActivePlayer {
     pub fn other(&self) -> Self {
-        match self {
-            ActivePlayer::One => ActivePlayer::Two,
-            ActivePlayer::Two => ActivePlayer::One,
-        }
+        ActivePlayer(match self.0 {
+            Player::One => Player::Two,
+            Player::Two => Player::One,
+        })
     }
 }
 
@@ -149,7 +159,7 @@ impl<'a, 'b> State<CustomGameData<'a, 'b, CustomData>, StateEvent> for Game {
 
         // Load resources
         data.world.add_resource(settings);
-        data.world.add_resource(ActivePlayer::One);
+        data.world.add_resource(ActivePlayer(Player::One));
 
         self.load_spritesheet(&mut data);
 

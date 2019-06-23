@@ -103,6 +103,9 @@ fn build_game_data<'a, 'b>(
             ToggleCellSystem::default(),
             "toggle_cell_system",
             &[],
-        )?;
+        )?
+        .with("game", CheckWinSystem::default(), "check_win_system", &[
+            "toggle_cell_system",
+        ])?;
     Ok(game_data)
 }
