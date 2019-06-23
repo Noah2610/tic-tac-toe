@@ -1,16 +1,19 @@
-mod game;
+pub mod game;
 
 pub mod prelude {
     pub use super::game::Game;
 }
 
 mod state_prelude {
-    pub use amethyst::prelude::Builder;
+    pub use amethyst::prelude::*;
     pub use amethyst::renderer::{
         Camera as AmethystCamera,
+        ElementState,
+        MouseButton,
         Projection,
         SpriteRender,
     };
+    pub use amethyst::winit::{Event, WindowEvent};
     pub use amethyst::{State, StateData, StateEvent, Trans};
 
     pub use deathframe::custom_game_data::prelude::*;

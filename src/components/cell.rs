@@ -7,6 +7,16 @@ pub enum CellType {
     Empty,
 }
 
+impl CellType {
+    pub fn sprite_number(&self) -> usize {
+        match self {
+            CellType::X => 1,
+            CellType::O => 2,
+            CellType::Empty => 0,
+        }
+    }
+}
+
 impl Default for CellType {
     fn default() -> Self {
         CellType::Empty
@@ -27,6 +37,19 @@ impl Cell {
             y,
             cell_type: Default::default(),
         }
+    }
+
+    pub fn click(&mut self, active_player: &ActivePlayer) {
+        if let CellType::Empty = self.cell_type {
+            self.cell_type = match active_player {
+                ActivePlayer::One => CellType::X,
+                ActivePlayer::Two => CellType::O,
+            };
+        }
+    }
+
+    pub fn sprite_number(&self) -> usize {
+        self.cell_type.sprite_number()
     }
 }
 

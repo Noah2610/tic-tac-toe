@@ -65,7 +65,7 @@ fn build_game_data<'a, 'b>(
     // Pipeline
     let pipeline = Pipeline::build().with_stage(
         Stage::with_backbuffer()
-            .clear_target([0.0, 0.0, 0.0, 1.0], 10.0)
+            .clear_target([1.0, 1.0, 1.0, 1.0], 10.0)
             .with_pass(DrawFlat2D::new().with_transparency(
                 ColorMask::all(),
                 ALPHA,
@@ -98,6 +98,11 @@ fn build_game_data<'a, 'b>(
         ])?
         .with_core(ScaleSpritesSystem, "scale_sprites_system", &[])?
         .with("game", CameraSystem, "camera_system", &[])?
-        .with("game", ToggleCellSystem, "toggle_cell_system", &[])?;
+        .with(
+            "game",
+            ToggleCellSystem::default(),
+            "toggle_cell_system",
+            &[],
+        )?;
     Ok(game_data)
 }

@@ -2,6 +2,21 @@ use super::state_prelude::*;
 
 const CAMERA_Z: f32 = 10.0;
 
+#[derive(Debug, PartialEq, Clone)]
+pub enum ActivePlayer {
+    One,
+    Two,
+}
+
+impl ActivePlayer {
+    pub fn other(&self) -> Self {
+        match self {
+            ActivePlayer::One => ActivePlayer::Two,
+            ActivePlayer::Two => ActivePlayer::One,
+        }
+    }
+}
+
 #[derive(Default)]
 pub struct Game {
     cell_size: Option<(f32, f32)>,
@@ -106,28 +121,37 @@ impl Game {
 
 impl<'a, 'b> State<CustomGameData<'a, 'b, CustomData>, StateEvent> for Game {
     fn on_start(&mut self, mut data: StateData<CustomGameData<CustomData>>) {
-        // Register components (remove later, when used in systems)
-        data.world.register::<Cell>();
-
-        // Load resources
-        data.world.add_resource(Settings::default());
-
-        self.load_spritesheet(&mut data);
-
-        // Set `cell_size`
-        {
+        let screen_dimensions = {
             let custom_data =
                 data.data.custom.as_ref().expect("CustomData must be set");
-            let settings = data.world.read_resource::<Settings>().clone();
             let dimensions = custom_data
                 .display_config
                 .dimensions
                 .expect("Dimensions must be set in display_config.ron");
-            self.cell_size = Some((
-                (dimensions.0 / settings.grid_size.0) as f32,
-                (dimensions.1 / settings.grid_size.1) as f32,
-            ));
-        }
+            dimensions
+        };
+
+        // Register components (remove later, when used in systems)
+        data.world.register::<Cell>();
+
+        // Settings
+        let settings = {
+            let mut settings = Settings::default();
+            settings.screen_dimensions = screen_dimensions.clone();
+            settings
+        };
+
+        // Set `cell_size`
+        self.cell_size = Some((
+            (screen_dimensions.0 / settings.grid_size.0) as f32,
+            (screen_dimensions.1 / settings.grid_size.1) as f32,
+        ));
+
+        // Load resources
+        data.world.add_resource(settings);
+        data.world.add_resource(ActivePlayer::One);
+
+        self.load_spritesheet(&mut data);
 
         self.initialize_camera(&mut data);
         self.initialize_grid(&mut data);
@@ -141,4 +165,31 @@ impl<'a, 'b> State<CustomGameData<'a, 'b, CustomData>, StateEvent> for Game {
 
         Trans::None
     }
+
+    /*
+    fn handle_event(
+        &mut self,
+        data: StateData<CustomGameData<CustomData>>,
+        event: StateEvent,
+    ) -> Trans<CustomGameData<'a, 'b, CustomData>, StateEvent> {
+        match event {
+            StateEvent::Window(Event::WindowEvent {
+                window_id,
+                event:
+                    WindowEvent::MouseInput {
+                        device_id,
+                        state,
+                        button,
+                        modifiers,
+                    },
+            }) => {
+                dbg!(state);
+                dbg!(button);
+            }
+            _ => (),
+        }
+
+        Trans::None
+    }
+    */
 }
