@@ -97,6 +97,7 @@ fn build_game_data<'a, 'b>(
             "input_system",
         ])?
         .with_core(ScaleSpritesSystem, "scale_sprites_system", &[])?
-        .with("game", CameraSystem, "camera_system", &[])?;
+        .with("game", CameraSystem, "camera_system", &[])?
+        .with("game", ToggleCellSystem, "toggle_cell_system", &[])?;
     Ok(game_data)
 }

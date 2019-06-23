@@ -15,9 +15,9 @@ impl Default for CellType {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Cell {
-    pub x:    u32,
-    pub y:    u32,
-    pub team: CellType,
+    pub x:         u32,
+    pub y:         u32,
+    pub cell_type: CellType,
 }
 
 impl Cell {
@@ -25,7 +25,7 @@ impl Cell {
         Self {
             x,
             y,
-            team: Default::default(),
+            cell_type: Default::default(),
         }
     }
 }

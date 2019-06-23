@@ -1,11 +1,10 @@
 pub mod cell;
-pub mod grid;
 
 pub mod prelude {
     pub use deathframe::components::prelude::*;
 
     pub use super::cell::Cell;
-    //pub use super::cell::Grid;
+    pub use super::cell::CellType;
 }
 
 mod component_prelude {
