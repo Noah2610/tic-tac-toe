@@ -2,37 +2,6 @@ use super::state_prelude::*;
 
 const CAMERA_Z: f32 = 10.0;
 
-#[derive(Debug, PartialEq, Clone)]
-pub enum Player {
-    One,
-    Two,
-}
-
-impl Player {
-    pub fn other(&self) -> Self {
-        match self {
-            Player::One => Player::Two,
-            Player::Two => Player::One,
-        }
-    }
-}
-
-pub struct ActivePlayer(pub Player);
-
-impl Default for ActivePlayer {
-    fn default() -> Self {
-        Self(Player::One)
-    }
-}
-
-pub type PlayerWon = Option<Player>;
-
-impl ActivePlayer {
-    pub fn other(&self) -> Self {
-        Self(self.0.other())
-    }
-}
-
 #[derive(Default)]
 pub struct Game {
     cell_size: Option<(f32, f32)>,
@@ -94,15 +63,9 @@ impl Game {
         &mut self,
         data: &mut StateData<CustomGameData<CustomData>>,
     ) {
-        let custom_data =
-            data.data.custom.as_ref().expect("CustomData must be set");
         let world = &mut data.world;
         let settings = world.read_resource::<Settings>().clone();
 
-        let dimensions = custom_data
-            .display_config
-            .dimensions
-            .expect("Dimensions must be set in display_config.ron");
         let cell_size =
             self.cell_size.as_ref().expect("cell_size must be Some");
         let spritesheet = world
@@ -175,7 +138,7 @@ impl<'a, 'b> State<CustomGameData<'a, 'b, CustomData>, StateEvent> for Game {
 
     fn update(
         &mut self,
-        mut data: StateData<CustomGameData<CustomData>>,
+        data: StateData<CustomGameData<CustomData>>,
     ) -> Trans<CustomGameData<'a, 'b, CustomData>, StateEvent> {
         data.data.update(&data.world, "game").unwrap();
 

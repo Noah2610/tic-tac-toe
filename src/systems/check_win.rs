@@ -37,7 +37,7 @@ impl<'a> System<'a> for CheckWinSystem {
 
             let mut winning_cell_ids = Vec::new();
 
-            for (root_cell_entity, root_cell) in (&entities, &cells).join() {
+            for root_cell in cells.join() {
                 if root_cell.cell_type == check_cell_type {
                     // CheckDirections
                     for check_direction in CheckDirection::iter() {

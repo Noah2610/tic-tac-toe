@@ -32,7 +32,7 @@ impl<'a> System<'a> for ToggleCellSystem {
             mut sprite_renders,
         ): Self::SystemData,
     ) {
-        let mouse_offset = if let Some((camera_transform, camera)) =
+        let mouse_offset = if let Some((camera_transform, _)) =
             (&transforms, &cameras).join().next()
         {
             let pos = camera_transform.translation();

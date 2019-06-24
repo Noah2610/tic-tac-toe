@@ -2,6 +2,7 @@ extern crate amethyst;
 extern crate deathframe;
 
 mod components;
+mod player;
 mod resource_helpers;
 mod settings;
 mod states;
@@ -27,6 +28,8 @@ use deathframe::custom_game_data::prelude::*;
 
 use resource_helpers::*;
 use systems::prelude::*;
+
+const BG_COLOR: [f32; 4] = [0.5, 0.5, 0.5, 1.0];
 
 fn main() -> amethyst::Result<()> {
     start_logger();
@@ -65,7 +68,7 @@ fn build_game_data<'a, 'b>(
     // Pipeline
     let pipeline = Pipeline::build().with_stage(
         Stage::with_backbuffer()
-            .clear_target([1.0, 1.0, 1.0, 1.0], 10.0)
+            .clear_target(BG_COLOR, 10.0)
             .with_pass(DrawFlat2D::new().with_transparency(
                 ColorMask::all(),
                 ALPHA,

@@ -4,14 +4,14 @@ use super::state_prelude::*;
 pub struct Won;
 
 impl<'a, 'b> State<CustomGameData<'a, 'b, CustomData>, StateEvent> for Won {
-    fn on_start(&mut self, mut data: StateData<CustomGameData<CustomData>>) {
+    fn on_start(&mut self, data: StateData<CustomGameData<CustomData>>) {
     }
 
     fn update(
         &mut self,
-        mut data: StateData<CustomGameData<CustomData>>,
+        data: StateData<CustomGameData<CustomData>>,
     ) -> Trans<CustomGameData<'a, 'b, CustomData>, StateEvent> {
-        data.data.update(&data.world, "won");
+        data.data.update(&data.world, "won").unwrap();
 
         Trans::None
     }

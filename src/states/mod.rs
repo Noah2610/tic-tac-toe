@@ -24,6 +24,7 @@ mod state_prelude {
 
     pub use super::prelude::*;
     pub use crate::components::prelude::*;
+    pub use crate::player::prelude::*;
     pub use crate::resource_helpers::*;
     pub use crate::settings::Settings;
     pub use crate::CustomData;
