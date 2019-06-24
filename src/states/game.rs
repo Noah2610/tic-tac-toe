@@ -8,6 +8,15 @@ pub enum Player {
     Two,
 }
 
+impl Player {
+    pub fn other(&self) -> Self {
+        match self {
+            Player::One => Player::Two,
+            Player::Two => Player::One,
+        }
+    }
+}
+
 pub struct ActivePlayer(pub Player);
 
 impl Default for ActivePlayer {
@@ -20,10 +29,7 @@ pub type PlayerWon = Option<Player>;
 
 impl ActivePlayer {
     pub fn other(&self) -> Self {
-        ActivePlayer(match self.0 {
-            Player::One => Player::Two,
-            Player::Two => Player::One,
-        })
+        Self(self.0.other())
     }
 }
 

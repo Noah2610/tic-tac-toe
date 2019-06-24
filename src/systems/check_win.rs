@@ -33,7 +33,7 @@ impl<'a> System<'a> for CheckWinSystem {
             .unwrap_or(true)
         {
             self.played_last = Some(active_player.0.clone());
-            let check_cell_type = CellType::from(&active_player.0);
+            let check_cell_type = CellType::from(&active_player.0.other());
 
             let mut winning_cell_ids = Vec::new();
 
@@ -41,31 +41,38 @@ impl<'a> System<'a> for CheckWinSystem {
                 if root_cell.cell_type == check_cell_type {
                     // CheckDirections
                     for check_direction in CheckDirection::iter() {
-                        winning_cell_ids = vec![root_cell_entity.id()];
-                        let mut prev_pos = root_cell.pos;
-                        let mut next_pos = (0, 0);
+                        let mut direction_winning_cell_ids = Vec::new();
+                        let mut next_pos_res = Ok(root_cell.pos);
                         let mut found_neighbor = true;
+
                         while found_neighbor
-                            && winning_cell_ids.len() < settings.win_length
+                            && direction_winning_cell_ids.len()
+                                < settings.win_length
+                            && next_pos_res.is_ok()
                         {
                             found_neighbor = false;
-                            next_pos = check_direction.next_pos_for(prev_pos);
-                            for (check_cell_entity, check_cell) in
-                                (&entities, &cells).join()
-                            {
-                                if check_cell.cell_type == check_cell_type
-                                    && check_cell.pos == next_pos
+                            if let Ok(next_pos) = next_pos_res {
+                                for (check_cell_entity, check_cell) in
+                                    (&entities, &cells).join()
                                 {
-                                    found_neighbor = true;
-                                    prev_pos = check_cell.pos;
-                                    winning_cell_ids
-                                        .push(check_cell_entity.id());
-                                    break;
+                                    if check_cell.cell_type == check_cell_type
+                                        && check_cell.pos == next_pos
+                                    {
+                                        found_neighbor = true;
+                                        next_pos_res = check_direction
+                                            .next_pos_for(next_pos);
+                                        direction_winning_cell_ids
+                                            .push(check_cell_entity.id());
+                                        break;
+                                    }
                                 }
                             }
                         }
 
-                        if winning_cell_ids.len() >= settings.win_length {
+                        if direction_winning_cell_ids.len()
+                            >= settings.win_length
+                        {
+                            winning_cell_ids = direction_winning_cell_ids;
                             break;
                         }
                     }
@@ -73,11 +80,11 @@ impl<'a> System<'a> for CheckWinSystem {
                         break;
                     }
                 }
+            }
 
-                if winning_cell_ids.len() >= settings.win_length {
-                    // WIN
-                    *player_won = Some(active_player.0.clone());
-                }
+            if winning_cell_ids.len() >= settings.win_length {
+                // WIN
+                *player_won = Some(active_player.0.clone());
             }
 
             // Only render winning cells.
@@ -100,6 +107,7 @@ enum CheckDirection {
     Right,
     Down,
     RightDown,
+    RightUp,
 }
 
 impl CheckDirection {
@@ -107,12 +115,27 @@ impl CheckDirection {
         CheckDirectionIter::default()
     }
 
-    pub fn next_pos_for(&self, pos: (u32, u32)) -> (u32, u32) {
-        match self {
+    pub fn next_pos_for(
+        &self,
+        pos: (u32, u32),
+    ) -> Result<(u32, u32), &'static str> {
+        Ok(match self {
             CheckDirection::Right => (pos.0 + 1, pos.1),
-            CheckDirection::Down => (pos.0, pos.1 + 1),
-            CheckDirection::RightDown => (pos.0 + 1, pos.1 + 1),
-        }
+            CheckDirection::Down => (pos.0, try_minus(pos.1, 1)?),
+            CheckDirection::RightDown => (pos.0 + 1, try_minus(pos.1, 1)?),
+            CheckDirection::RightUp => (pos.0 + 1, pos.1 + 1),
+        })
+    }
+}
+
+// x - y = z
+// x: minuend
+// y: subtrahend
+fn try_minus(minuend: u32, subtrahend: u32) -> Result<u32, &'static str> {
+    if minuend >= subtrahend {
+        Ok(minuend - subtrahend)
+    } else {
+        Err("Minuend is larger than subtrahend")
     }
 }
 
@@ -129,11 +152,10 @@ impl Iterator for CheckDirectionIter {
             0 => Some(CheckDirection::Right),
             1 => Some(CheckDirection::Down),
             2 => Some(CheckDirection::RightDown),
+            3 => Some(CheckDirection::RightUp),
             _ => None,
         };
-
         self.index += 1;
-
         ret
     }
 }
