@@ -1,9 +1,9 @@
 [package]
 name = "tictactoe"
-version = "0.0.0"
+version = "1.0.0"
 authors = ["Noah Rosenzweig <rosenzweig.noah@gmail.com>"]
 edition = "2018"
 
 [dependencies]
 amethyst = "0.10.0"
-deathframe = { path = "../deathframe" }
+deathframe = "0.0.0"
