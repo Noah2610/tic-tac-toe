@@ -1,9 +1,22 @@
 #!/bin/bash
 # Build the project for development.
 
-ROOT="$( cd $(dirname $0)/..; pwd )"
-source "$ROOT/bin/util.sh"
+# shellcheck source=./util.sh  # Optional; fixes shellcheck's `source` warning
+_dir="$( dirname "$0" )"
+[ -f "${_dir}/util.sh" ] || bash "${_dir}/download-util.sh" || exit 1
+source "${_dir}/util.sh"
+unset _dir
 
-check "cargo" && \
-  # cargo $cmd
-  cargo +nightly-2019-03-01 build "$@" --features amethyst/nightly
+function main {
+  check "cargo"
+  local cmd="cargo +nightly-2019-03-01 build $* --features amethyst/nightly"
+
+  if should_run_in_terminal; then
+    cmd="${cmd}; echo -e '\n[CONTINUE]'; read -n"
+    run_terminal "$cmd"
+  else
+    $cmd
+  fi
+}
+
+main "$@"

@@ -21,7 +21,9 @@ mod state_prelude {
     pub use deathframe::custom_game_data::prelude::*;
     pub use deathframe::geo::Vector;
     pub use deathframe::handlers::SpriteSheetHandles;
+    pub use deathframe::input_manager::InputManager;
 
+    pub use super::helpers::*;
     pub use super::prelude::*;
     pub use crate::components::prelude::*;
     pub use crate::player::prelude::*;
@@ -31,3 +33,22 @@ mod state_prelude {
 }
 
 pub use prelude::*;
+
+mod helpers {
+    use super::state_prelude::*;
+
+    pub trait StateQuit {
+        fn handle_keys<'a, 'b>(
+            &self,
+            data: &StateData<CustomGameData<CustomData>>,
+        ) -> Option<Trans<CustomGameData<'a, 'b, CustomData>, StateEvent>>
+        {
+            let input_manager = data.world.read_resource::<InputManager>();
+            if input_manager.is_up("quit") {
+                Some(Trans::Quit)
+            } else {
+                None
+            }
+        }
+    }
+}
