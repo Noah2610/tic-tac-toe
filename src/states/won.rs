@@ -13,6 +13,13 @@ impl<'a, 'b> State<CustomGameData<'a, 'b, CustomData>, StateEvent> for Won {
     ) -> Trans<CustomGameData<'a, 'b, CustomData>, StateEvent> {
         data.data.update(&data.world, "won").unwrap();
 
+        if let Some(trans) = self.handle_keys(&data) {
+            return trans;
+        }
+
         Trans::None
     }
+}
+
+impl<'a, 'b> StateQuit<'a, 'b> for Won {
 }

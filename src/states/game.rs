@@ -142,11 +142,18 @@ impl<'a, 'b> State<CustomGameData<'a, 'b, CustomData>, StateEvent> for Game {
     ) -> Trans<CustomGameData<'a, 'b, CustomData>, StateEvent> {
         data.data.update(&data.world, "game").unwrap();
 
-        if let Some(player_won) = &*data.world.read_resource::<PlayerWon>() {
+        if let Some(trans) = self.handle_keys(&data) {
+            return trans;
+        }
+
+        if let Some(layer_won) = &*data.world.read_resource::<PlayerWon>() {
             // A player won, switch to `states::Won` state.
             return Trans::Switch(Box::new(Won::default()));
         }
 
         Trans::None
     }
+}
+
+impl<'a, 'b> StateQuit<'a, 'b> for Game {
 }

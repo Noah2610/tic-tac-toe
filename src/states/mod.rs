@@ -36,9 +36,10 @@ pub use prelude::*;
 
 mod helpers {
     use super::state_prelude::*;
+    use amethyst::input::is_close_requested;
 
-    pub trait StateQuit {
-        fn handle_keys<'a, 'b>(
+    pub trait StateQuit<'a, 'b> {
+        fn handle_keys(
             &self,
             data: &StateData<CustomGameData<CustomData>>,
         ) -> Option<Trans<CustomGameData<'a, 'b, CustomData>, StateEvent>>
@@ -48,6 +49,23 @@ mod helpers {
                 Some(Trans::Quit)
             } else {
                 None
+            }
+        }
+
+        fn handle_event(
+            &mut self,
+            _data: StateData<CustomGameData<CustomData>>,
+            event: StateEvent,
+        ) -> Trans<CustomGameData<'a, 'b, CustomData>, StateEvent> {
+            match &event {
+                StateEvent::Window(event) => {
+                    if is_close_requested(&event) {
+                        Trans::Pop
+                    } else {
+                        Trans::None
+                    }
+                }
+                _ => Trans::None,
             }
         }
     }
