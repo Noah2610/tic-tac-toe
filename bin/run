@@ -12,7 +12,7 @@ function main {
   local cmd="cargo +nightly-2019-03-01 run $* --features amethyst/nightly"
 
   if should_run_in_terminal; then
-    cmd="${cmd}; echo -e '\n[CONTINUE]'; read -n"
+    cmd="${cmd}; echo -e '\n[CONTINUE]'; read"
     run_terminal "$cmd"
   else
     $cmd
